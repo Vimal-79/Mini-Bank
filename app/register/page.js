@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const inputClass =
   "mt-2 w-full rounded-md border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100";
@@ -14,6 +17,9 @@ const errorClass = "mt-2 text-sm font-semibold text-[#DC2626]";
 
 export default function RegisterPage() {
   const [submittedName, setSubmittedName] = useState("");
+  const [serverMessage, setServerMessage] = useState("");
+  const [apiError, setApiError] = useState("");
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -27,12 +33,51 @@ export default function RegisterPage() {
     },
   });
 
-  function onSubmit(data) {
-    setSubmittedName(`${data.firstName} ${data.lastName}`);
-    reset({
-      accountType: "Savings",
-      nationality: "Indian",
-    });
+  async function onSubmit(data) {
+    setApiError("");
+    setServerMessage("");
+
+    const payload = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      mobile: data.mobile,
+      dateOfBirth: data.dateOfBirth,
+      nationality: data.nationality,
+      accountType: data.accountType,
+      initialDeposit: data.initialDeposit ? Number(data.initialDeposit) : 0,
+      address: data.address,
+      password: data.password,
+      termsAccepted: data.termsAccepted === true,
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/api/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setApiError(result?.message || "Registration failed. Please try again.");
+        return;
+      }
+
+      setSubmittedName(`${data.firstName} ${data.lastName}`);
+      setServerMessage(result?.message || "Registration submitted successfully.");
+      reset({
+        accountType: "Savings",
+        nationality: "Indian",
+      });
+      router.push("/KYC");
+    } catch (error) {
+      setApiError("Unable to connect to the registration server. Please check the backend.");
+      console.error("Registration error:", error);
+    }
   }
 
   return (
@@ -74,7 +119,12 @@ export default function RegisterPage() {
 
           {submittedName && (
             <div className="mt-5 rounded-md border border-[#BBF7D0] bg-[#DCFCE7] px-4 py-3 text-sm font-bold text-[#15803D]">
-              Registration captured for {submittedName}. Next step: KYC upload.
+              {serverMessage || `Registration captured for ${submittedName}. Next step: KYC upload.`}
+            </div>
+          )}
+          {apiError && (
+            <div className="mt-5 rounded-md border border-[#FECACA] bg-[#FEE2E2] px-4 py-3 text-sm font-bold text-[#B91C1C]">
+              {apiError}
             </div>
           )}
 
