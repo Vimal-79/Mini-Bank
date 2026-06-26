@@ -37,7 +37,7 @@ export default function RegisterPage() {
   const [apiError, setApiError] = useState("");
   const [passwordHash, setPasswordHash] = useState("");
   const [confirmPasswordHash, setConfirmPasswordHash] = useState("");
-  const [bcryptSalt, setBcryptSalt] = useState("Bankai senbon sakura kageyoshi");
+  const [bcryptSalt, setBcryptSalt] = useState("");
   const router = useRouter();
   const {
     register,
