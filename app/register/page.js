@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import bcrypt from "bcryptjs";
 import Navbar from "../components/Navbar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -15,16 +16,36 @@ const labelClass = "text-sm font-bold text-[#0F172A]";
 
 const errorClass = "mt-2 text-sm font-semibold text-[#DC2626]";
 
+function isAtLeast18(value) {
+  if (!value) return true;
+
+  const birthDate = new Date(value);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+
+  return age >= 18 || "You must be at least 18 years old to register.";
+}
+
 export default function RegisterPage() {
   const [submittedName, setSubmittedName] = useState("");
   const [serverMessage, setServerMessage] = useState("");
   const [apiError, setApiError] = useState("");
+  const [passwordHash, setPasswordHash] = useState("");
+  const [confirmPasswordHash, setConfirmPasswordHash] = useState("");
+  const [bcryptSalt, setBcryptSalt] = useState("Bankai senbon sakura kageyoshi");
   const router = useRouter();
   const {
     register,
     handleSubmit,
     getValues,
     reset,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -33,9 +54,57 @@ export default function RegisterPage() {
     },
   });
 
+  async function ensureSalt() {
+    if (bcryptSalt) {
+      return bcryptSalt;
+    }
+
+    const newSalt = await bcrypt.genSalt(10);
+    setBcryptSalt(newSalt);
+    return newSalt;
+  }
+
+  async function hashPassword(value) {
+    if (!value) return "";
+    const salt = await ensureSalt();
+    return bcrypt.hash(value, salt);
+  }
+
+  async function validateAndHashPasswords() {
+    const password = getValues("password");
+    const confirmPassword = getValues("confirmPassword");
+
+    const newPasswordHash = await hashPassword(password);
+    setPasswordHash(newPasswordHash);
+
+    if (!confirmPassword) {
+      return { valid: true, passwordHash: newPasswordHash };
+    }
+
+    const salt = bcryptSalt || (await ensureSalt());
+    const newConfirmPasswordHash = await bcrypt.hash(confirmPassword, salt);
+    setConfirmPasswordHash(newConfirmPasswordHash);
+
+    if (newPasswordHash && newConfirmPasswordHash && newPasswordHash !== newConfirmPasswordHash) {
+      setError("confirmPassword", {
+        type: "validate",
+        message: "Passwords do not match.",
+      });
+      return { valid: false, passwordHash: newPasswordHash };
+    }
+
+    clearErrors("confirmPassword");
+    return { valid: true, passwordHash: newPasswordHash };
+  }
+
   async function onSubmit(data) {
     setApiError("");
     setServerMessage("");
+
+    const { valid: passwordsValid, passwordHash: hashedPassword } = await validateAndHashPasswords();
+    if (!passwordsValid) {
+      return;
+    }
 
     const payload = {
       firstName: data.firstName,
@@ -47,8 +116,9 @@ export default function RegisterPage() {
       accountType: data.accountType,
       initialDeposit: data.initialDeposit ? Number(data.initialDeposit) : 0,
       address: data.address,
-      password: data.password,
+      password: hashedPassword || data.password,
       termsAccepted: data.termsAccepted === true,
+      currentTime: new Date().toISOString()
     };
 
     try {
@@ -220,9 +290,11 @@ export default function RegisterPage() {
               <input
                 id="dateOfBirth"
                 type="date"
+                max={new Date().toISOString().split("T")[0]}
                 className={inputClass}
                 {...register("dateOfBirth", {
                   required: "Date of birth is required.",
+                  validate: (value) => isAtLeast18(value),
                 })}
               />
               {errors.dateOfBirth && (
@@ -329,6 +401,7 @@ export default function RegisterPage() {
                     message: "Password must be at least 8 characters.",
                   },
                 })}
+                onBlur={validateAndHashPasswords}
               />
               {errors.password && (
                 <p className={errorClass}>{errors.password.message}</p>
@@ -346,9 +419,12 @@ export default function RegisterPage() {
                 className={inputClass}
                 {...register("confirmPassword", {
                   required: "Confirm your password.",
-                  validate: (value) =>
-                    value === getValues("password") || "Passwords do not match.",
+                  validate: async (value) => {
+                    const valid = await validateAndHashPasswords();
+                    return valid || "Passwords do not match.";
+                  },
                 })}
+                onBlur={validateAndHashPasswords}
               />
               {errors.confirmPassword && (
                 <p className={errorClass}>{errors.confirmPassword.message}</p>
