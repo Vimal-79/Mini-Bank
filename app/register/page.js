@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs";
 import Navbar from "../components/Navbar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const FIXED_BCRYPT_SALT = process.env.NEXT_PUBLIC_BCRYPT_SALT || "$2a$10$1234567890123456789012";
 
 const inputClass =
   "mt-2 w-full rounded-md border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100";
@@ -37,7 +38,6 @@ export default function RegisterPage() {
   const [apiError, setApiError] = useState("");
   const [passwordHash, setPasswordHash] = useState("");
   const [confirmPasswordHash, setConfirmPasswordHash] = useState("");
-  const [bcryptSalt, setBcryptSalt] = useState("");
   const router = useRouter();
   const {
     register,
@@ -54,20 +54,9 @@ export default function RegisterPage() {
     },
   });
 
-  async function ensureSalt() {
-    if (bcryptSalt) {
-      return bcryptSalt;
-    }
-
-    const newSalt = await bcrypt.genSalt(10);
-    setBcryptSalt(newSalt);
-    return newSalt;
-  }
-
   async function hashPassword(value) {
     if (!value) return "";
-    const salt = await ensureSalt();
-    return bcrypt.hash(value, salt);
+    return bcrypt.hash(value, FIXED_BCRYPT_SALT);
   }
 
   async function validateAndHashPasswords() {
@@ -81,8 +70,7 @@ export default function RegisterPage() {
       return { valid: true, passwordHash: newPasswordHash };
     }
 
-    const salt = bcryptSalt || (await ensureSalt());
-    const newConfirmPasswordHash = await bcrypt.hash(confirmPassword, salt);
+    const newConfirmPasswordHash = await hashPassword(confirmPassword);
     setConfirmPasswordHash(newConfirmPasswordHash);
 
     if (newPasswordHash && newConfirmPasswordHash && newPasswordHash !== newConfirmPasswordHash) {

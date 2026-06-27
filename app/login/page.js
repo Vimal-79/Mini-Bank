@@ -2,21 +2,79 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "../components/Navbar";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import bcrypt from "bcryptjs";
+import Navbar from "../components/Navbar";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const FIXED_BCRYPT_SALT = process.env.NEXT_PUBLIC_BCRYPT_SALT || "$2a$10$1234567890123456789012";
 
 const inputClass =
   "mt-2 w-full rounded-md border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [loginError, setLoginError] = useState("");
+  const [loginSuccess, setLoginSuccess] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
+    if (storedToken) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
+  async function hashPassword(value) {
+    if (!value) return "";
+    return bcrypt.hash(value, FIXED_BCRYPT_SALT);
+  }
+
+  const onSubmit = async (data) => {
+    setLoginError("");
+    setLoginSuccess("");
+
+    const hashedPassword = await hashPassword(data.password);
+
+    try {
+      const response = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.loginId,
+          password: hashedPassword || data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setLoginError(result?.message || "Login failed. Please try again.");
+        return;
+      }
+
+      if (result.token) {
+        localStorage.setItem("authToken", result.token);
+        console.log("Result:", result.token);
+        setLoginSuccess("Login successful! Redirecting to dashboard...");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1000);
+      } else {
+        setLoginError("No token received. Please try again.");
+      }
+    } catch (error) {
+      setLoginError("Unable to connect to the server.");
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -60,21 +118,33 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {loginError && (
+              <div className="mt-5 rounded-md border border-[#FECACA] bg-[#FEE2E2] px-4 py-3 text-sm font-bold text-[#B91C1C]">
+                {loginError}
+              </div>
+            )}
+
+            {loginSuccess && (
+              <div className="mt-5 rounded-md border border-[#BBF7D0] bg-[#DCFCE7] px-4 py-3 text-sm font-bold text-[#15803D]">
+                {loginSuccess}
+              </div>
+            )}
+
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="mt-6 space-y-5"
             >
               <div>
                 <label className="text-sm font-bold">
-                  Email / Username / Account Number
+                  Email
                 </label>
 
                 <input
                   type="text"
-                  placeholder="Enter your login ID"
+                  placeholder="Enter your email"
                   className={inputClass}
                   {...register("loginId", {
-                    required: "Login ID is required",
+                    required: "Email is required",
                   })}
                 />
 

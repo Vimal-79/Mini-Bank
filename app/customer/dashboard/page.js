@@ -47,11 +47,11 @@ export default function CustomerDashboard() {
           </p>
 
           <h1 className="mt-2 text-4xl font-extrabold">
-            Welcome Back, Rahul
+            this is a demo customer dashboard for chulbul bank
           </h1>
 
           <p className="mt-3 text-blue-100">
-            Manage your finances effortlessly.
+            demo dashboard for chulbul bank, where you can view your account balance, recent transactions, and manage your banking activities.
           </p>
 
         </div>
