@@ -52,6 +52,7 @@ export default function LoginPage() {
     const hashedPassword = await hashPassword(data.password);
 
     try {
+      console.log("API URL:", `${API_URL}/api/login`)
       const response = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: {
