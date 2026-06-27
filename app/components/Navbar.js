@@ -9,13 +9,7 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-function Navbar({ isAuthenticated = false, onLogout = null }) {
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
-  };
-
+function Navbar() {
   return (
     <header className="w-full border-b border-white/10 bg-[#061A40]/95 text-white backdrop-blur">
       <nav className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4 lg:px-10">
@@ -36,37 +30,18 @@ function Navbar({ isAuthenticated = false, onLogout = null }) {
         </div>
 
         <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
-          {isAuthenticated ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="rounded-md border border-white/20 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="rounded-md border border-white/20 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#1D4ED8]"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          <Link
+            href="/login"
+            className="rounded-md border border-white/20 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
+          >
+            Login
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-md bg-[#2563EB] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#1D4ED8]"
+          >
+            Register
+          </Link>
         </div>
       </nav>
     </header>

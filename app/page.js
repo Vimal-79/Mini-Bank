@@ -29,29 +29,6 @@ const customerModules = [
   "Statements",
 ];
 
-// const roleCards = [
-//   {
-//     role: "Customer",
-//     accent: "bg-[#DCFCE7] text-[#15803D]",
-//     items: ["Register and login", "View balance", "Transfer money"],
-//   },
-//   {
-//     role: "Employee",
-//     accent: "bg-[#FEF3C7] text-[#B45309]",
-//     items: ["Verify KYC", "Approve customers", "Customer lookup"],
-//   },
-//   {
-//     role: "Manager",
-//     accent: "bg-[#EFF6FF] text-[#2563EB]",
-//     items: ["View reports", "Freeze accounts", "Approve large transfers"],
-//   },
-//   {
-//     role: "Admin",
-//     accent: "bg-[#FEE2E2] text-[#B91C1C]",
-//     items: ["Manage staff", "View accounts", "Analytics"],
-//   },
-// ];
-
 const transactions = [
   ["Salary Credit", "+Rs 48,000", "text-[#22C55E]"],
   ["Aarav Mehta", "-Rs 7,500", "text-[#EF4444]"],
@@ -233,49 +210,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* <section className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-normal text-[#2563EB]">
-              Role System
-            </p>
-            <h2 className="mt-3 text-3xl font-extrabold md:text-4xl">
-              Built around bank operations
-            </h2>
-          </div>
-
-          <Link
-            href="/login"
-            className="w-fit rounded-md bg-[#0F172A] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#061A40]"
-          >
-            Enter Banking Portal
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {roleCards.map((card) => (
-            <article
-              key={card.role}
-              className="rounded-lg border border-[#E2E8F0] bg-white p-5 shadow-sm"
-            >
-              <span
-                className={`inline-flex rounded-md px-3 py-2 text-sm font-extrabold ${card.accent}`}
-              >
-                {card.role}
-              </span>
-              <ul className="mt-5 space-y-3 text-sm text-[#475569]">
-                {card.items.map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 rounded bg-[#2563EB]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section> */}
     </main>
   );
 }

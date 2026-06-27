@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { FiSend, FiCreditCard, FiDownload, FiFileText, FiCheck } from 'react-icons/fi'
 import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
@@ -58,7 +59,7 @@ const Dashboard = () => {
   useEffect(() => {
     const verifyJWT = async () => {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
 
         if (!token) {
           router.push("/login");
@@ -79,7 +80,8 @@ const Dashboard = () => {
 
         if (!response.ok) {
           localStorage.removeItem("authToken");
-          router.push("/login");
+          sessionStorage.removeItem("authToken");
+          router.push("/login");``
           return;
         }
 
@@ -96,11 +98,13 @@ const Dashboard = () => {
           setIsAuthenticated(true);
         } else {
           localStorage.removeItem("authToken");
+          sessionStorage.removeItem("authToken");
           router.push("/login");
         }
       } catch (error) {
         console.error("JWT verification error:", error);
         localStorage.removeItem("authToken");
+        sessionStorage.removeItem("authToken");
         router.push("/login");
       } finally {
         setIsLoading(false);
@@ -126,14 +130,15 @@ const Dashboard = () => {
   }
 
   const quickActions = [
-    { label: "Send Money", href: "/services", icon: "→" },
-    { label: "Pay Bills", href: "/services", icon: "💳" },
-    { label: "Request Money", href: "/services", icon: "⬅️" },
-    { label: "View Statements", href: "/services", icon: "📄" },
+    { label: "Send Money", href: "/services", icon: <FiSend size={20} /> },
+    { label: "Pay Bills", href: "/services", icon: <FiCreditCard  size={20} /> },
+    { label: "Request Money", href: "/services", icon: <FiDownload size={20} /> },
+    { label: "View Statements", href: "/services", icon: <FiFileText size={20} /> },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
     router.push("/login");
   };
 
@@ -157,7 +162,7 @@ const Dashboard = () => {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={handleLogout}
-                className="w-fit rounded-md bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-700"
+                className="w-fit rounded-md bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-700 cursor-pointer"
               >
                 Logout
               </button>
@@ -211,14 +216,14 @@ const Dashboard = () => {
         <div className="mb-8">
           <h3 className="mb-4 text-xl font-extrabold text-[#0F172A]">Quick Actions</h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {quickActions.map((action) => (
+            {quickActions.map((item) => (
               <Link
-                key={action.label}
-                href={action.href}
+                key={item.label}
+                href={item.href}
                 className="flex items-center justify-between rounded-lg border border-[#E2E8F0] bg-white p-4 transition hover:border-[#2563EB] hover:bg-[#F0F9FF]"
               >
-                <span className="font-semibold text-[#0F172A]">{action.label}</span>
-                <span className="text-lg">{action.icon}</span>
+                <span className="font-semibold text-[#0F172A]">{item.label}</span>
+                <span className="icon">{item.icon}</span>
               </Link>
             ))}
           </div>
@@ -313,7 +318,7 @@ const Dashboard = () => {
               </h3>
               <div className="space-y-2">
                 <Link
-                  href="/customer/dashboard"
+                  href="/"
                   className="block rounded-md px-3 py-2 text-sm font-semibold text-[#2563EB] transition hover:bg-[#F0F9FF]"
                 >
                   View Statements
@@ -335,7 +340,7 @@ const Dashboard = () => {
 
             {/* Account Status */}
             <div className="rounded-lg border border-[#BBF7D0] bg-[#DCFCE7] p-6 shadow-sm">
-              <p className="text-sm font-bold text-[#15803D]">✓ Account Verified</p>
+              <p className="text-sm font-bold text-[#15803D] flex gap-1 items-center"><span className="icon"> <FiCheck /> </span> Account Verified</p>
               <p className="mt-2 text-xs text-[#15803D]">
                 Your account is fully verified and ready for all transactions.
               </p>

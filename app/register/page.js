@@ -127,10 +127,9 @@ export default function RegisterPage() {
 
       setSubmittedName(`${data.firstName} ${data.lastName}`);
       setServerMessage(result?.message || "Registration submitted successfully.");
-      reset({
-        accountType: "Savings",
-        nationality: "Indian",
-      });
+      reset({ accountType: "Savings", nationality: "Indian" });
+
+      sessionStorage.setItem("fromRegistration", "true");
       router.push("/KYC");
     } catch (error) {
       setApiError("Unable to connect to the registration server. Please check the backend.");

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 
@@ -9,7 +11,25 @@ const inputClass =
 const buttonClass =
   "rounded-md bg-[#2563EB] px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:bg-[#94A3B8]";
 
+
 export default function KYCPage() {
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false); 
+
+  useEffect(() => {
+    const flag = sessionStorage.getItem("fromRegistration");
+
+    if (!flag) {
+      router.replace("/register");
+      return;
+    }
+
+    sessionStorage.removeItem("fromRegistration");
+    setAllowed(true);
+  }, []);
+
+  if (!allowed) return null;
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
       <section className="bg-[#061A40] text-white">
@@ -48,7 +68,7 @@ export default function KYCPage() {
                   className={`mt-3 ${inputClass}`}
                 />
                 <p className="mt-2 text-sm text-[#64748b]">
-                  Example: passport, voter ID, or driver’s license image.
+                  Example: passport, voter ID, or driver;s license image.
                 </p>
               </label>
 

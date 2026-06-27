@@ -1,6 +1,7 @@
 
 import Navbar from "../components/Navbar";
 import Link from "next/link";
+import { FiCheck } from "react-icons/fi";
 
 const values = [
   {
@@ -31,6 +32,14 @@ const users = [
   "Branch Managers",
   "Administrators",
 ];
+
+const whyChooseUs = [
+  { icon: <FiCheck />, text: "Secure digital banking" },
+  { icon: <FiCheck />, text: "Modern user experience" },
+  { icon: <FiCheck />, text: "Fast account management" },
+  { icon: <FiCheck />, text: "Easy money transfers" },
+  { icon: <FiCheck />, text: "Role-based banking platform" }
+]
 
 export default function AboutPage() {
   return (
@@ -145,11 +154,16 @@ export default function AboutPage() {
               </h2>
 
               <ul className="mt-6 space-y-4 text-[#475569]">
-                <li>✓ Secure digital banking</li>
-                <li>✓ Modern user experience</li>
-                <li>✓ Fast account management</li>
-                <li>✓ Easy money transfers</li>
-                <li>✓ Role-based banking platform</li>
+
+                {whyChooseUs.map((item, index) => {
+                  return (
+                    <li className="flex gap-1 items-center" key={index}>
+                      <span className="icon">{item.icon}</span>
+                      <span className="text">{item.text}</span>
+                    </li>
+                  )
+                })}
+
               </ul>
             </div>
 

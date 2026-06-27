@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { FiCheck } from "react-icons/fi";
 import bcrypt from "bcryptjs";
 import Navbar from "../components/Navbar";
 
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [loginError, setLoginError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const {
     register,
     handleSubmit,
@@ -25,7 +27,7 @@ export default function LoginPage() {
   } = useForm();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
+    const storedToken = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");;
     if (storedToken) {
       router.push("/dashboard");
     }
@@ -35,6 +37,13 @@ export default function LoginPage() {
     if (!value) return "";
     return bcrypt.hash(value, FIXED_BCRYPT_SALT);
   }
+
+  const secureBankingFeatures = [
+    { feature: "JWT Authentication", icon: <FiCheck size={14} /> },
+    { feature: "Secure Password Storage", icon: <FiCheck size={14} /> },
+    { feature: "Protected Transactions", icon: <FiCheck size={14} /> },
+    { feature: "Role-Based Access", icon: <FiCheck size={14} /> },
+  ];
 
   const onSubmit = async (data) => {
     setLoginError("");
@@ -61,14 +70,23 @@ export default function LoginPage() {
         return;
       }
 
-      if (result.token) {
+      if (result.token && rememberMe) {
         localStorage.setItem("authToken", result.token);
         console.log("Result:", result.token);
         setLoginSuccess("Login successful! Redirecting to dashboard...");
         setTimeout(() => {
           router.push("/dashboard");
         }, 1000);
-      } else {
+      }
+      else if (result.token && !rememberMe) {
+        sessionStorage.setItem("authToken", result.token);
+        console.log("Result:", result.token);
+        setLoginSuccess("Login successful! Redirecting to dashboard...");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1000);
+      }
+      else {
         setLoginError("No token received. Please try again.");
       }
     } catch (error) {
@@ -178,7 +196,11 @@ export default function LoginPage() {
 
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm text-[#475569]">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
                   Remember me
                 </label>
 
@@ -219,21 +241,14 @@ export default function LoginPage() {
               </h2>
 
               <div className="mt-5 space-y-4 text-sm text-blue-100">
-                <div>
-                  ✓ JWT Authentication
-                </div>
-
-                <div>
-                  ✓ Secure Password Storage
-                </div>
-
-                <div>
-                  ✓ Protected Transactions
-                </div>
-
-                <div>
-                  ✓ Role-Based Access
-                </div>
+                {secureBankingFeatures.map((item, index) => {
+                  return (
+                    <div className="flex gap-2 items-center" key={index}>
+                      <span className="icon">{item.icon}</span>
+                      {item.feature}
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
