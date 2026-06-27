@@ -430,7 +430,7 @@ export default function RegisterPage() {
             <span>
               I agree to the Chulbul Bank{" "}
               <Link
-                href="/term&conditions"
+                href="/term_and_conditions"
                 className="font-bold text-[#2563EB] hover:text-[#1D4ED8]"
               >
                 Terms & Conditions
