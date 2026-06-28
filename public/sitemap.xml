@@ -2,35 +2,35 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://localhost:3000/</loc>
+    <loc>https://chulbul-bank.netlify.app</loc>
     <lastmod>2025-06-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://localhost:3000/about</loc>
+    <loc>https://chulbul-bank.netlify.app/about</loc>
     <lastmod>2025-06-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://yourdomain.com/services</loc>
+    <loc>https://chulbul-bank.netlify.app/services</loc>
     <lastmod>2025-06-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://localhost:3000/contact</loc>
+    <loc>https://chulbul-bank.netlify.app/contact</loc>
     <lastmod>2025-06-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://localhost:3000/register</loc>
+    <loc>https://chulbul-bank.netlify.app/register</loc>
     <lastmod>2025-06-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
