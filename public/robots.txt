@@ -7,4 +7,4 @@ Allow: /register
 
 Disallow: /staff/
 
-Sitemap: https://localhost:3000/sitemap.xml
+Sitemap: https://chulbul-bank.netlify.app/sitemap.xml
